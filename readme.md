@@ -5,19 +5,21 @@ Neo4py is an alternative to __py2neo__. I am trying my best to make it a perfect
 
 ### How to run a query in neo4py
 As it is a clone of py2neo so, I have added the similar functions like of py2neo so, that the users won't have the problem in migrating from py2neo to neo4py. 
-<br/>
+
 These are the steps you can use to execute a query in neo4py:
 1. Import the `Graph` class from the `neo4py`.
-<br>
+
 <code>
 from neo4py import Graph
 </code>
+
 2. Create a `graph` object and pass your __URI__, and __connection details__ to the `Graph` constructor.
-<br>
+
 <code>
 graph = Graph("connection_uri",("user","db_password"))
 </code>
-You can find your connection uri and user details, when you'll start your database and open __neo4j browser__. <br>
+
+You can find your connection uri and user details, when you'll start your database and open __neo4j browser__. 
 __Password__ is the password that you have set while creating the database.
 
 <br>
@@ -35,7 +37,6 @@ data = {
 node = graph.run("CREATE (p:Person {name:$name,age:$age})", **data)
 
 ```
-<br>
 
 
 ### Final Words
