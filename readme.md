@@ -9,14 +9,14 @@ As it is a clone of py2neo so, I have added the similar functions like of py2neo
 These are the steps you can use to execute a query in neo4py:
 1. Import the `Graph` class from the `neo4py`.
 <br>
-```
+<code>
 from neo4py import Graph
-```
+</code>
 2. Create a `graph` object and pass your __URI__, and __connection details__ to the `Graph` constructor.
 <br>
-```
-graph = Graph(connection_uri,(user,db_password))
-```
+<code>
+graph = Graph("connection_uri",("user","db_password"))
+</code>
 You can find your connection uri and user details, when you'll start your database and open __neo4j browser__. <br>
 __Password__ is the password that you have set while creating the database.
 
