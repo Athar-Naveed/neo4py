@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
-Name: neo4py
-Version: 0.0.2
-Summary: Neo4py is an alternative to py2neo. I am trying my best to make it a perfect and better clone of the py2neo package.
+Name: neo4py-atharnaveed
+Version: 1.0.1b0
+Summary: Neo4py is a better alternative to py2neo.
 Author-email: Athar Naveed <asphaltlegends24@gmail.com>
 Project-URL: Homepage, https://github.com/Athar-Naveed/neo4py
 Classifier: Programming Language :: Python :: 3
@@ -21,15 +21,31 @@ As it is a clone of py2neo so, I have added the similar functions like of py2neo
 
 These are the steps you can use to execute a query in neo4py:
 1. Import the `Graph` class from the `neo4py`.
-<code>
+
+<br>
+
+```
 from neo4py import Graph
-</code>
+```
+
+<br>
+
 
 2. Create a `graph` object and pass your __URI__, and __connection details__ to the `Graph` constructor.
 
-<code>
+<br>
+
+```
 graph = Graph("connection_uri",("user","db_password"))
-</code>
+```
+<br>
+
+```
+# Example code
+graph = Graph("bolt://localhost:7687",("neo4j","12345678"))
+```
+
+<br>
 
 You can find your connection uri and user details, when you'll start your database and open __neo4j browser__. 
 __Password__ is the password that you have set while creating the database.

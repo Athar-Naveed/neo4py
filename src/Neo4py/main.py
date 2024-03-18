@@ -33,7 +33,7 @@ class Graph:
                 print(e)
                 print("\nCheck if your Neo4j is up and running or try restarting the Neo4j instance.")
 
-    def run(self,query:str,**kwargs:dict)->dict:
+    def run(self,query:str,**kwargs:dict)->list:
         """run method
 
         Params:
@@ -41,7 +41,7 @@ class Graph:
             **kwargs (dict): It can receive any number of keyword arguments which will be passed into the cypher query in execute_query method using dict.
 
         Returns:
-            summary (ResultSummary): It'll return the summary of the executed query, printing the query that got executed, and the time it took to get executed.
+            resp (list of dict): It'll return the data in the form of list of dictionaries, which you can iterate over to access your desired data.
         
         Example code:
             graph = Graph("connection_string",("username","password")) \n
@@ -54,10 +54,15 @@ class Graph:
         """
         with GraphDatabase.driver(self.uri,auth=self.auth) as driver:
             try:
-                summary = driver.execute_query(query,**kwargs,database_=self.auth[0]).summary
-                return summary
+                records,summary,keys = driver.execute_query(query,**kwargs,database_=self.auth[0])
+                resp:list = []
+                for record in records:
+                    rec = record.data()['n']
+                    rec.update({'id':record[0].element_id[-1]})
+                    rec.update({'labels':list(record[0].labels)})
+                    resp.append(rec)
+                return resp
             except Exception as e:
                 print(e)
     
-
 
