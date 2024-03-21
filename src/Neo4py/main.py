@@ -54,15 +54,37 @@ class Graph:
         """
         with GraphDatabase.driver(self.uri,auth=self.auth) as driver:
             try:
+                # ----------------------------
+                # fetching data from database
+                # ----------------------------
                 records,summary,keys = driver.execute_query(query,**kwargs,database_=self.auth[0])
-                resp:list = []
-                for record in records:
-                    rec = record.data()['n']
-                    rec.update({'id':record[0].element_id[-1]})
-                    rec.update({'labels':list(record[0].labels)})
-                    resp.append(rec)
-                return resp
+                # ----------------------------
+                # checking for return statement
+                # ----------------------------
+                if "return" in query:
+                    data_to_fetch = query.split("return")[1].strip().split(",")
+                    resp:list = []
+                    if data_to_fetch[0] == "n":
+                # ----------------------------
+                # adding all the fetched nodes in to a list and making it a list of dictionaries
+                # ----------------------------
+                        for record in records:
+                            rec = record.data()["n"]
+                            rec.update({'id':record[0].element_id[-1]})
+                            rec.update({'labels':list(record[0].labels)})
+                            resp.append(rec)
+                        return resp
+                    else:
+                # ----------------------------
+                # if user has asked for a specific data like, n.name or n.age
+                # ----------------------------
+                        for record in records:
+                            for prop in data_to_fetch:
+                                resp.append(record.data()[prop])
+                        return resp
+                # ----------------------------
+                # if no return statement, then return summary of the query executed.
+                # ----------------------------
+                return summary
             except Exception as e:
                 print(e)
-    
-

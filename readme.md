@@ -12,7 +12,7 @@ These are the steps you can use to execute a query in neo4py:
 <br>
 
 ```
-from neo4py import Graph
+from neo4py-atharnaveed import Graph
 ```
 
 <br>

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: neo4py-atharnaveed
-Version: 1.0.1b0
+Version: 1.0.2b0
 Summary: Neo4py is a better alternative to py2neo.
 Author-email: Athar Naveed <asphaltlegends24@gmail.com>
 Project-URL: Homepage, https://github.com/Athar-Naveed/neo4py
@@ -25,7 +25,7 @@ These are the steps you can use to execute a query in neo4py:
 <br>
 
 ```
-from neo4py import Graph
+from neo4py-atharnaveed import Graph
 ```
 
 <br>
