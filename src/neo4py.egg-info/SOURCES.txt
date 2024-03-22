@@ -1,0 +1,10 @@
+LICENSE
+pyproject.toml
+readme.md
+src/neo4py/__init__.py
+src/neo4py/main.py
+src/neo4py.egg-info/PKG-INFO
+src/neo4py.egg-info/SOURCES.txt
+src/neo4py.egg-info/dependency_links.txt
+src/neo4py.egg-info/top_level.txt
+tests/test_neo.py
