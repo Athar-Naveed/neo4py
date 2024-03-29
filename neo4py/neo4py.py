@@ -64,7 +64,7 @@ class Graph:
                 if "return" in query:
                     data_to_fetch = query.split("return")[1].strip().split(",")
                     resp:list = []
-                    if data_to_fetch[0] == "n":
+                    if data_to_fetch[0] == "(n)" or data_to_fetch[0] == "n":
                 # ----------------------------
                 # adding all the fetched nodes in to a list and making it a list of dictionaries
                 # ----------------------------
@@ -88,3 +88,4 @@ class Graph:
                 return summary
             except Exception as e:
                 print(e)
+
