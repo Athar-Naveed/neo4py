@@ -34,7 +34,6 @@ class Sloth():
                         res = list()
                         for record in records:
                             node = record['n']
-                            # print(node)
                             rec_properties = dict(node)
                             rec_properties.update({'id':int(node.element_id[-1])})
                             res.append(rec_properties)
