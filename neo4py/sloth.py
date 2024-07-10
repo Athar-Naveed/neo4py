@@ -30,10 +30,10 @@ class Sloth():
                         result = session.run(query, props=node)
                         for record in result:
                             data = record["n"]._properties
-                            data.update({'id':record['n'].element_id[-1]})
+                            data.update({'id':record['n'].element_id.split(":")[2]})
                             returned_data.append(data)
         except Exception as e:
-            raise Exception("Exception: ",e)
+            raise e
         
         return returned_data
     # ===========================
@@ -42,6 +42,16 @@ class Sloth():
     def read_node(self,query:str|dict):
         """
         It returns all nodes as a list of dictionary
+
+        Params:
+        query (str|dict): For string: 
+        You can pass data like this, sloth.read_node("*"), it'll return the whole data
+
+        For dict:
+        You can pass data like this, sloth.read_node({"name":"John"}), it'll return the data where name is John
+
+        Return:
+        list: It will return the data in the form of list of dictionaries, which you can iterate over to access your desired data.
         """
         try:
             with GraphDatabase.driver(self.uri,auth=self.auth) as driver:
@@ -52,14 +62,22 @@ class Sloth():
                         for record in records:
                             node = record['n']
                             rec_properties = dict(node)
-                            rec_properties.update({'id':int(node.element_id[-1])})
+                            rec_properties.update({'id':int(node.element_id.split(":")[2])})
                             res.append(rec_properties)
                     return res
                 else:
-                    key,value = list(query.items())
+                    keys,values = '',''
+                    for key,value in query.items():
+                        keys = key
+                        values = value
                     with driver.session() as session:
-                        records = session.run(f"MATCH (n) WHERE '{key}'={value}")
-                        return records
+                        records = session.run("MATCH (n) WHERE n.{}='{}' RETURN (n)".format(keys,values))
+                        res = list()
+                        for record in records:
+                            node = record['n']
+                            rec_properties = dict(node)
+                            rec_properties.update({'id':int(node.element_id.split(":")[2])})
+                            res.append(rec_properties)
+                    return res
         except Exception as e:
-            raise Exception("Exception: ",e)
-
+            raise e

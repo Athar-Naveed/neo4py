@@ -82,16 +82,6 @@ class Graph:
                     return res
                 return [summary,keys]
             except Exception as e:
-                print(e)
+                raise e
 
 
-graph = Graph("bolt://localhost:7687",("neo4j","12345678"))
-
-data = {
-    "name":"Athar Naveed",
-    "age":25
-}
-
-query = "MATCH (p) RETURN p.name as name, p.age as age"
-
-print(graph.run(query,**data))
