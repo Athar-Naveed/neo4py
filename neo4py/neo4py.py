@@ -1,10 +1,16 @@
+# ----------------------------
+# Imports
+# ----------------------------
 from neo4j import GraphDatabase
 
+# ----------------------------
+# Graph code
+# ----------------------------
 class Graph:
     """Graph
 
     Constructor:
-        The constructor of the Graph class takes 2 parameters  - uri and Auth.
+        The constructor of the Graph class takes 2 parameters  - uri and Auth. Default params for uri and Auth are available, if you won't provide it.
 
         Params:
         uri (str): A string representing a URI to connect to Neo4j database, e.g., bolt://localhost:7687
@@ -21,7 +27,7 @@ class Graph:
         Return:
         It returns the summary, and the keys of the result obtained by executing the query on the database.
     """
-    def __init__(self,uri:str,Auth:tuple):
+    def __init__(self,uri:str="bolt://localhost:7687",Auth:tuple=("neo4j","12345678"))->None:
         self.uri = uri
         self.auth= Auth
         with GraphDatabase.driver(uri,auth=Auth) as driver:
@@ -31,7 +37,7 @@ class Graph:
                 print("Connection with driver verified!")
             except Exception as e:
                 print(e)
-                print("\nCheck if your Neo4j is up and running or try restarting the Neo4j instance.")
+                raise e
 
     def run(self,query:str,**kwargs:dict)->list:
         """run method
@@ -76,11 +82,14 @@ class Graph:
                         rec = record.data()
                         res.append(rec)
                 # ----------------------------
-                # if the user has asked for response retun it, else return the list of summary and keys
+                # if the user has asked for response retun it
                 # ----------------------------
                 if res:
                     return res
-                return [summary,keys]
+                # ----------------------------
+                # if the user has asked for response and no response is found
+                # ----------------------------
+                return [summary,keys,{"message":"No record found","status":404}]
             except Exception as e:
                 raise e
 

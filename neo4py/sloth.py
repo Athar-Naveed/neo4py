@@ -1,82 +1,61 @@
-from neo4j import GraphDatabase 
-class Sloth():
-    def __init__(self,uri,Auth):
+from neo4j import GraphDatabase
+
+class Sloth:
+    def __init__(self, uri: str = "bolt://localhost:7687", Auth: tuple = ("neo4j", "12345678")) -> None:
         self.uri = uri
         self.auth = Auth
+        with GraphDatabase.driver(uri, auth=Auth) as driver:
+            try:
+                print("Checking connection with Neo4j...")
+                driver.verify_connectivity()
+                print("Connection with driver verified!")
+            except Exception as e:
+                print(e)
+                raise e
 
-    def create_node(self, nodes)->dict:
+    def read_node(self, query: str | dict, logical_operator: str = "AND") -> list:
         """
-        It creates nodes in the graph, you have to pass the nodes data as a list of dictionaries.
-        
+        Reads nodes from the Neo4j graph database.
+
         Params:
-        nodes (list of dict): You can pass data to it like this:
-        nodes = [{"name":"John","age":30,"gender":"male"},{"name":"Jane","age":25,"label":["Person","Human"]}]
+        query (str | dict): The query parameter can be either a string or a dictionary.
+            - If the query is "*", it returns all nodes.
+            - If the query is a dictionary, it returns nodes that match the specified properties. For example:
+              query = {"name": "John", "age": 22}
 
-        Return:
-        dict: It will return the data in the form of dictionary, which you can access.
+        logical_operator (str): The logical operator to be used between multiple conditions in the query. Default is "AND". Possible values are "AND" and "OR".
 
+        Returns:
+        list: A list of dictionaries, each representing the properties of the retrieved nodes, including a generated node ID.
         """
-        returned_data = []
         try:
             with GraphDatabase.driver(self.uri, auth=self.auth) as driver:
-                for node in nodes:
-                    if "label" in node.keys():
-                        labels = ":".join([node["label"]] if isinstance(node["label"], str) else node["label"])
-                        query = f"CREATE (n:{labels} $props) RETURN (n)"
-                    else:
-                        query = f"CREATE (n $props) RETURN (n)"
-                    
-                    with driver.session() as session:
-                        result = session.run(query, props=node)
-                        for record in result:
-                            data = record["n"]._properties
-                            data.update({'id':record['n'].element_id.split(":")[2]})
-                            returned_data.append(data)
-        except Exception as e:
-            raise e
-        
-        return returned_data
-    # ===========================
-    # ===========================
-    # ===========================
-    def read_node(self,query:str|dict):
-        """
-        It returns all nodes as a list of dictionary
-
-        Params:
-        query (str|dict): For string: 
-        You can pass data like this, sloth.read_node("*"), it'll return the whole data
-
-        For dict:
-        You can pass data like this, sloth.read_node({"name":"John"}), it'll return the data where name is John
-
-        Return:
-        list: It will return the data in the form of list of dictionaries, which you can iterate over to access your desired data.
-        """
-        try:
-            with GraphDatabase.driver(self.uri,auth=self.auth) as driver:
                 if query == "*":
                     with driver.session() as session:
                         records = session.run("MATCH (n) RETURN (n)")
-                        res = list()
+                        res = []
                         for record in records:
                             node = record['n']
                             rec_properties = dict(node)
-                            rec_properties.update({'id':int(node.element_id.split(":")[2])})
+                            rec_properties.update({'id': int(node.element_id.split(":")[2])})
                             res.append(rec_properties)
                     return res
                 else:
-                    keys,values = '',''
-                    for key,value in query.items():
-                        keys = key
-                        values = value
+                    conditions = []
+                    for key, value in query.items():
+                        if isinstance(value, str):
+                            conditions.append(f"n.{key}='{value}'")
+                        else:
+                            conditions.append(f"n.{key}={value}")
+                    condition_str = f" {logical_operator} ".join(conditions)
+                    
                     with driver.session() as session:
-                        records = session.run("MATCH (n) WHERE n.{}='{}' RETURN (n)".format(keys,values))
-                        res = list()
+                        records = session.run(f"MATCH (n) WHERE {condition_str} RETURN (n)")
+                        res = []
                         for record in records:
                             node = record['n']
                             rec_properties = dict(node)
-                            rec_properties.update({'id':int(node.element_id.split(":")[2])})
+                            rec_properties.update({'id': int(node.element_id.split(":")[2])})
                             res.append(rec_properties)
                     return res
         except Exception as e:
