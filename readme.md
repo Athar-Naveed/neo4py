@@ -1,5 +1,5 @@
 ## Neo4py
-A proper documentation to __neo4py__ will be available soon through streamlit.
+A proper documentation to __neo4py__ is available [here](https://neo4pydocs.vercel.app/).
 ## Introduction
 Neo4py is an alternative to __py2neo__. I am trying my best to make it a perfect and better clone of the py2neo package.
 

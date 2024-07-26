@@ -1,10 +1,16 @@
+# ----------------------------
+# Imports
+# ----------------------------
 from neo4j import GraphDatabase
 
+# ----------------------------
+# Graph code
+# ----------------------------
 class Graph:
     """Graph
 
     Constructor:
-        The constructor of the Graph class takes 2 parameters  - uri and Auth.
+        The constructor of the Graph class takes 2 parameters  - uri and Auth. Default params for uri and Auth are available, if you won't provide it.
 
         Params:
         uri (str): A string representing a URI to connect to Neo4j database, e.g., bolt://localhost:7687
@@ -19,9 +25,9 @@ class Graph:
         **kwargs (dict): It takes the data in the dictionary format.
 
         Return:
-        It returns the summary of the  result obtained by executing the query on the database.
+        It returns the summary, and the keys of the result obtained by executing the query on the database.
     """
-    def __init__(self,uri,Auth):
+    def __init__(self,uri:str="bolt://localhost:7687",Auth:tuple=("neo4j","12345678"))->None:
         self.uri = uri
         self.auth= Auth
         with GraphDatabase.driver(uri,auth=Auth) as driver:
@@ -31,7 +37,7 @@ class Graph:
                 print("Connection with driver verified!")
             except Exception as e:
                 print(e)
-                print("\nCheck if your Neo4j is up and running or try restarting the Neo4j instance.")
+                raise e
 
     def run(self,query:str,**kwargs:dict)->list:
         """run method
@@ -42,6 +48,7 @@ class Graph:
 
         Returns:
             resp (list of dict): It'll return the data in the form of list of dictionaries, which you can iterate over to access your desired data.
+            summary,keys (list): By default, a list will be returned that will contain the summary of the executed query and the keys.
         
         Example code:
             graph = Graph("connection_string",("username","password")) \n
@@ -59,33 +66,31 @@ class Graph:
                 # ----------------------------
                 records,summary,keys = driver.execute_query(query,**kwargs,database_=self.auth[0])
                 # ----------------------------
-                # checking for return statement
+                # created an empty list to store query response
                 # ----------------------------
-                if "return" in query:
-                    data_to_fetch = query.split("return")[1].strip().split(",")
-                    resp:list = []
-                    if data_to_fetch[0] == "(n)" or data_to_fetch[0] == "n":
+                res:list = list()
                 # ----------------------------
-                # adding all the fetched nodes in to a list and making it a list of dictionaries
+                # iterating over the fetched records and storing them
                 # ----------------------------
-                        for record in records:
-                            rec = record.data()["n"]
-                            rec.update({'id':record[0].element_id[-1]})
-                            rec.update({'labels':list(record[0].labels)})
-                            resp.append(rec)
-                        return resp
+                for record in records:
+                    rec = record.data()[keys[0]]
+                    if isinstance(rec,dict):
+                        rec.update({"id":int(record[0].element_id[-1])})
+                        rec.update({"labels":list(record[0].labels)})
+                        res.append(rec)
                     else:
+                        rec = record.data()
+                        res.append(rec)
                 # ----------------------------
-                # if user has asked for a specific data like, n.name or n.age
+                # if the user has asked for response retun it
                 # ----------------------------
-                        for record in records:
-                            for prop in data_to_fetch:
-                                resp.append(record.data()[prop])
-                        return resp
+                if res:
+                    return res
                 # ----------------------------
-                # if no return statement, then return summary of the query executed.
+                # if the user has asked for response and no response is found
                 # ----------------------------
-                return summary
+                return [summary,keys,{"message":"No record found","status":404}]
             except Exception as e:
-                print(e)
+                raise e
+
 

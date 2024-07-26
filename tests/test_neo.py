@@ -1,4 +1,4 @@
-from src.neo4py.main import Graph
+from ..neo4py.neo4py import Graph
 class TestNeo():
     def test_match(self):
         graph = Graph("bolt://localhost:7687",("neo4j","12345678"))
