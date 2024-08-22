@@ -10,14 +10,14 @@ These are the steps you can use to execute a query in neo4py:
 
 <br>
 
-1. First install `neo4j` using either __pip__ or __uv__.
+1. First install `neo4py` using either __pip__ or __uv__.
 
 ```
-pip install neo4j
+pip install neo4py
 
 # or you can use uv for this
 
-uv pip install neo4j
+uv pip install neo4py
 ```
 
 <br>
